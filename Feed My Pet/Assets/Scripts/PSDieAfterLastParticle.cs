@@ -8,6 +8,7 @@ public class PSDieAfterLastParticle : MonoBehaviour
 
     void Start() {
         _ps = GetComponent<ParticleSystem>();
+        StartCoroutine(WaitTillLastParticle());
     }
 
     IEnumerator WaitTillLastParticle() {
