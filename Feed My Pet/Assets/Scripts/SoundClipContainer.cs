@@ -6,7 +6,7 @@ using UnityEngine;
 [Serializable]
 public class RandomAudioClip {
     public AudioClip clip;
-    [Range(0,1)] public float chance;
+    [Range(0,1)] public float chance = 0.5f;
 }
 
 

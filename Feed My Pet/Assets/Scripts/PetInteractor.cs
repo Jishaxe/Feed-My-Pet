@@ -13,12 +13,14 @@ public class PetInteractor : MonoBehaviour
     [SerializeField] float _holdYOffset = 0.1f;
     
     bool _shouldBeEating = true;
-
+    
+    public bool isEating = false;
     public bool isHoldingObject = false;
     public FoodObject currentHeldObject = null;
     float _holdDistance = 0.4f;
     float _prevObjectDrag; // store previous rb drag so we can restore after dropping
 
+    PetSounds _sounds;
     PetFaceDirection _heldFaceDirection;
 
     /// <summary>
@@ -96,15 +98,15 @@ public class PetInteractor : MonoBehaviour
     }
 
     public void DropObject() {
-        Debug.Log("dropping object " + currentHeldObject.name);
+        isHoldingObject = false;
         if (currentHeldObject == null) return;
 
-        isHoldingObject = false;
         currentHeldObject.GetComponent<Rigidbody>().drag = _prevObjectDrag;
         currentHeldObject = null;
     }
 
     IEnumerator EatFoodCoroutine(FoodObject food) {
+        isEating = true;
         PickUpObject(food);
 
          _holdDistance = 0.3f; 
@@ -114,6 +116,8 @@ public class PetInteractor : MonoBehaviour
 
 
         while (food.bitesLeft > 0 && shouldBeEating) {
+            _sounds.PlayOpenMouthSound();
+
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.3f, 0.8f));
             _holdDistance = 0.2f;
             yield return new WaitForSeconds(0.2f);
@@ -121,13 +125,16 @@ public class PetInteractor : MonoBehaviour
             // calculate plane to use for slicing the food
             Vector3 planePosition = this.transform.position + _holdDirection * (_holdDistance + 0.05f);
             food.Bite(planePosition, _holdDirection);
+            _sounds.PlayCrunchSound();
 
             yield return new WaitForSeconds(0.8f);
 
             _holdDistance = 0.3f;
 
+            _sounds.PlayMunchSounds();
 
             gameObject.SendMessage("FoodBitten", food);
+            yield return new WaitForSeconds(1f);
         }
 
         DropObject();
@@ -136,6 +143,7 @@ public class PetInteractor : MonoBehaviour
             gameObject.SendMessage("FoodEaten", food);
         }
 
+        isEating = false;
         _eatFoodCoroutine = null;
     }
 
@@ -162,6 +170,7 @@ public class PetInteractor : MonoBehaviour
 
     void Start() {
         _petMovement = GetComponent<PetMovement>();
+        _sounds = GetComponent<PetSounds>();
     }
 
     /// <summary>
