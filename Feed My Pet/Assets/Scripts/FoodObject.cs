@@ -49,7 +49,7 @@ public class FoodObject : MonoBehaviour
     }
 
     public void Eaten() {
-        GetComponentInChildren<Renderer>().enabled = false;
+        //GetComponentInChildren<Renderer>().enabled = false;
         munchFx.Emit(100);
         munchFx.gameObject.GetComponent<PSDieAfterLastParticle>().enabled = true;
         munchFx.gameObject.transform.parent = null;

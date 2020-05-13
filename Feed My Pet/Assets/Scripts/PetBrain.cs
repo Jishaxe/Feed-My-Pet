@@ -128,6 +128,19 @@ public class PetBrain : MonoBehaviour
 
     void UpdateHunger() {
         hunger -= _hungerLoss;
+        if (hunger < 0.6f) {
+            _excitement -= 0.05f; // excitement penalty when starving
+
+
+            // get excited when hungry and we see food
+            if (_spottedFood.Count > 0) {
+                _excitement += 0.5f * (1 - hunger);
+            }
+
+            _excitement = Mathf.Clamp01(_excitement);
+        }
+
+    
     }
 
     void UpdateExcitement() {
@@ -139,6 +152,8 @@ public class PetBrain : MonoBehaviour
         } else if (_excitement < _excitementTendsTo - 0.01f) {
             _excitement += _excitementChangeCurve.Evaluate(_excitement) / 1000;
         }
+
+        _excitement = Mathf.Clamp01(_excitement);
     }
 
     void ApplyAwakenessFx() {
