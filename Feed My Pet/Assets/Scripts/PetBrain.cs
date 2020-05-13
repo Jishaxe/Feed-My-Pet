@@ -154,7 +154,7 @@ public class PetBrain : MonoBehaviour
 		    _jellyMesh.WakeUp();
         }
 
-        _renderer.material.color = Color.Lerp(_hungryColour, _fullColour, _hunger);
+        _renderer.sharedMaterial.color = Color.Lerp(_hungryColour, _fullColour, _hunger);
     }
 
     /// <summary>

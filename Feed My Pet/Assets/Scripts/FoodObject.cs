@@ -20,13 +20,19 @@ public class FoodObject : MonoBehaviour
         SlicedHull slicedHull = meshObject.Slice(slicePlanePosition, slicePlaneDirection, meshObject.GetComponent<Renderer>().material);
 
         if (slicedHull != null) {
-            Debug.Log("sliced!");
             GameObject slicedMesh = slicedHull.CreateUpperHull();
             slicedMesh.GetComponent<Renderer>().material = meshObject.GetComponent<Renderer>().material;
             slicedMesh.transform.parent = this.transform;
             slicedMesh.transform.position = meshObject.transform.position;
             slicedMesh.transform.rotation = meshObject.transform.rotation;
             slicedMesh.transform.localScale = meshObject.transform.localScale;
+            slicedMesh.tag = "Food";
+            
+            MeshCollider meshCollider = (MeshCollider)slicedMesh.AddComponent(typeof(MeshCollider));
+            meshCollider.sharedMesh = slicedMesh.GetComponent<MeshFilter>().mesh;
+            meshCollider.convex = true;
+
+            meshObject.tag = "Untagged";
             Destroy(meshObject);
             meshObject = slicedMesh;
 

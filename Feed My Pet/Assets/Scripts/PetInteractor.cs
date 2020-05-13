@@ -11,13 +11,14 @@ public class PetInteractor : MonoBehaviour
 {
     [SerializeField] float _holdForce = 1f;
     [SerializeField] float _holdYOffset = 0.1f;
-
+    
     bool _shouldBeEating = true;
 
     public bool isHoldingObject = false;
     public FoodObject currentHeldObject = null;
     float _holdDistance = 0.4f;
     float _prevObjectDrag; // store previous rb drag so we can restore after dropping
+
     PetFaceDirection _heldFaceDirection;
 
     /// <summary>
@@ -73,11 +74,25 @@ public class PetInteractor : MonoBehaviour
             else DropObject(); // drop whatever was being held before
         }
 
+        currentHeldObject = food;
         _prevObjectDrag = food.GetComponent<Rigidbody>().drag;
         food.GetComponent<Rigidbody>().drag = 10f; // stop it from osciliating when being picked up
         _heldFaceDirection = GetClosestFacePosition(food.transform.position);
+
+        StartCoroutine(PickUpObjectCoroutine());
+
+    }
+
+    IEnumerator PickUpObjectCoroutine() {
         isHoldingObject = true;
-        currentHeldObject = food;
+
+        // wait a moment to let the arm reach out to the food
+        yield return new WaitForSeconds(1f);
+        
+        if (currentHeldObject == null) yield break; // food might have been eaten in this time, so cancel
+
+        // now make the object move to the right place along with the arm
+        isHoldingObject = true;
     }
 
     public void DropObject() {
