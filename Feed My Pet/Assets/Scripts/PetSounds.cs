@@ -6,7 +6,7 @@ public class PetSounds : MonoBehaviour
 {
     [Space(30)]
     [SerializeField] AudioSource _squelchAudioSource;
-    [SerializeField] AudioClip[] _squelchingClips;
+    [SerializeField] SoundClipContainer _squelchingClips;
     
     /// <summary>
     /// X us minimum relativeVelocity magnitute to play squelch sound, Y is maximum speed before volume is not increased any further
@@ -33,7 +33,7 @@ public class PetSounds : MonoBehaviour
     void PlaySquelchSound(float force) {
         _squelchAudioSource.volume = Mathf.Lerp(_squelchVolumes.x, _squelchVolumes.y, force);
         _squelchAudioSource.pitch = Mathf.Lerp(_squelchPitches.x, _squelchPitches.y, force);
-        _squelchAudioSource.PlayOneShot(_squelchingClips[Random.Range(0, _squelchingClips.Length)]);
+        _squelchAudioSource.PlayOneShot(_squelchingClips.GetRandomClip());
     }
 
     void OnJellyCollisionEnter(JellyMesh.JellyCollision collision) {
