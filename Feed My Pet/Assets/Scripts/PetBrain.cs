@@ -63,7 +63,7 @@ public class PetBrain : MonoBehaviour
     FoodSpawner _foodSpawner;
     PetInteractor _interactor;
     StockpileArea _stockpileArea;
-    
+    PetSounds _sounds;
 
     List<FoodObject> _spottedFood = new List<FoodObject>();
 
@@ -77,6 +77,7 @@ public class PetBrain : MonoBehaviour
         _foodSpawner = GameObject.Find("FoodSpawner").GetComponent<FoodSpawner>();
         _stockpileArea = GameObject.Find("StockpileArea").GetComponent<StockpileArea>();
         _interactor = GetComponent<PetInteractor>();
+        _sounds = GetComponent<PetSounds>();
 
         StartCoroutine(Tick());
         StartCoroutine(LookForFood());
@@ -93,7 +94,9 @@ public class PetBrain : MonoBehaviour
             newMovementDirection = GetMovement();
         }
 
+        if (newMovementDirection.magnitude > 1) newMovementDirection.Normalize();
         newMovementDirection *= _excitement;
+        newMovementDirection.y = 0;
         _petMovement.movementDirection = newMovementDirection;    
 
         ApplyHungerFx();
