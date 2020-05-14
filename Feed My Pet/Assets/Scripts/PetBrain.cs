@@ -258,7 +258,6 @@ public class PetBrain : MonoBehaviour
         float factor = Time.time * wanderFactor;
 
         Vector3 wander = new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
-        Debug.Log(wander);
         return wander;
     }
 
