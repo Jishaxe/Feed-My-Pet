@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// represents a food before it's spawned
@@ -15,6 +16,9 @@ public class FoodSpawner : MonoBehaviour
     public List<FoodObject> foodInScene;
     public Material indicatorMaterial;
     public Transform spawnPoint;
+    public Text countText;
+
+    public int maxFoodInScene;
 
     public float spawnForce;
     
@@ -34,6 +38,9 @@ public class FoodSpawner : MonoBehaviour
     }
 
     public void QueueSpawn(int count) {
+        // dont let queue get too big
+        if (_foodSpawnQueue.Count > 100) return;
+
         for (int i = 0; i < count; i++) {
             FoodSpawnDefinition spawn = new FoodSpawnDefinition();
             spawn.color = Random.ColorHSV(0f, 1f, 0.25f, 0.8f, 1f, 1f);
@@ -113,5 +120,10 @@ public class FoodSpawner : MonoBehaviour
         if (isOpen && !_isFiring && _foodSpawnQueue.Count > 0) {
             StartCoroutine(StartFiring());
         }
+
+        if (foodInScene.Count > maxFoodInScene) isOpen = false;
+        else isOpen = true;
+
+        countText.text = _foodSpawnQueue.Count.ToString();
     }
 }

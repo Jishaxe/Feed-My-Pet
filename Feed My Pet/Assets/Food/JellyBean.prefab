@@ -5036,7 +5036,7 @@ MonoBehaviour:
   spawner: {fileID: 0}
   meshObject: {fileID: 5800597371156873121}
   bitesLeft: 2
-  hungerPerBite: 0.2
+  hungerPerBite: 0.1
   stockpileArea: {fileID: 0}
 --- !u!64 &3620928793028793773
 MeshCollider:
