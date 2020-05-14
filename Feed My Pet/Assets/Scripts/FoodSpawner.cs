@@ -7,11 +7,22 @@ public class FoodSpawner : MonoBehaviour
     public FoodObject foodPrefab;
 
     public List<FoodObject> foodInScene;
+    
+    public Collider raycastCatcher;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+
+    public void SpawnFoodRandomly() {
+        Vector3 randomLocation = new Vector3(Random.Range(raycastCatcher.bounds.min.x, raycastCatcher.bounds.max.x), 0.5f, Random.Range(raycastCatcher.bounds.min.z, raycastCatcher.bounds.max.z));
+        SpawnFood(randomLocation);
+    }
+
+    void SpawnFood(Vector3 position) {
+        FoodObject newFood = Instantiate(foodPrefab.gameObject).GetComponent<FoodObject>();
+
+        newFood.transform.position = position;
+        newFood.spawner = this;
+
+        foodInScene.Add(newFood);
     }
 
     // Update is called once per frame
@@ -23,12 +34,7 @@ public class FoodSpawner : MonoBehaviour
 
             if (Physics.Raycast (ray, out hit, 100f, LayerMask.GetMask("RaycastCatcher"))) {
                 Vector3 position = hit.point + new Vector3(0, 0.5f, 0);
-                FoodObject newFood = Instantiate(foodPrefab.gameObject).GetComponent<FoodObject>();
-
-                newFood.transform.position = position;
-                newFood.spawner = this;
-
-                foodInScene.Add(newFood);
+                SpawnFood(position);
             }
         }
     }
