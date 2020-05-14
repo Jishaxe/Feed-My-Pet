@@ -15,8 +15,18 @@ Bot.on('error', err => {
 })
  
 Bot.on('message', chatter => {
-  if(chatter.message.toLowerCase().includes("!feed")) {
-      console.log("CMD feed");
+  if(chatter.message.toLowerCase().startsWith("!feed")) {
+      if (chatter.message.split(" ").length != 2) {
+        console.log("CMD feed 1")
+        return
+      }
+
+      var num = chatter.message.split(" ")[1]
+      num = parseInt(num)
+      if (isNaN(num)) return
+      if (num < 1 || num > 10) return
+
+      console.log("CMD feed " + num);
   }
 })
 

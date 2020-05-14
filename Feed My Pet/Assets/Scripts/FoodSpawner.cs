@@ -34,9 +34,11 @@ public class FoodSpawner : MonoBehaviour
     }
 
     public void QueueSpawn(int count) {
-        FoodSpawnDefinition spawn = new FoodSpawnDefinition();
-        spawn.color = Random.ColorHSV(0f, 1f, 0.25f, 0.8f, 1f, 1f);
-        _foodSpawnQueue.Enqueue(spawn);
+        for (int i = 0; i < count; i++) {
+            FoodSpawnDefinition spawn = new FoodSpawnDefinition();
+            spawn.color = Random.ColorHSV(0f, 1f, 0.25f, 0.8f, 1f, 1f);
+            _foodSpawnQueue.Enqueue(spawn);
+        }
     }
 
     void SpawnFood(Vector3 position) {

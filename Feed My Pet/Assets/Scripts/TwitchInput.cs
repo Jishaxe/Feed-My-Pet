@@ -55,8 +55,8 @@ public class TwitchInput : MonoBehaviour
         while (_commandsToProcess.Count > 0) {
             string cmd = _commandsToProcess.Dequeue();
 
-            if (cmd == "feed") {
-                _spawner.QueueSpawn(1);
+            if (cmd.StartsWith("feed")) {
+                _spawner.QueueSpawn(int.Parse(cmd.Split(' ')[1]));
                 continue;
             }
         }
