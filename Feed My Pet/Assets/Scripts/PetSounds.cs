@@ -5,16 +5,24 @@ using UnityEngine;
 
 public class PetSounds : MonoBehaviour
 {
-    [Space(30)]
-    [SerializeField] AudioSource _squelchAudioSource;
 
     [SerializeField] AudioSource _genericAudioSource;
 
-    [SerializeField] SoundClipContainer _squelchingClips;
     [SerializeField] SoundClipContainer _openMouthClips;
     [SerializeField] SoundClipContainer _biteClips;
     [SerializeField] SoundClipContainer _munchClips;
+
+    [Space(30)]
+    [SerializeField] AudioSource _trillAudioSource;
+    [SerializeField] SoundClipContainer _trillClips;
+    [SerializeField] Vector2 _trillPitchRange;
+    [SerializeField] Vector2 _trillChanceRange;
+    [SerializeField] float _minTimeBetweenTrills;
     
+    [Space(30)]
+    [SerializeField] AudioSource _squelchAudioSource;
+    [SerializeField] SoundClipContainer _squelchingClips;
+
     /// <summary>
     /// X us minimum relativeVelocity magnitute to play squelch sound, Y is maximum speed before volume is not increased any further
     /// </summary>
@@ -36,6 +44,12 @@ public class PetSounds : MonoBehaviour
     [SerializeField] float timeBetweenSquelches;
 
     float timeLastPlayedSquelch = 0;
+    PetBrain _petBrain;
+
+    void Start() {
+        _petBrain = GetComponent<PetBrain>();
+        StartCoroutine(CheckForTrill());
+    }
 
     void PlaySquelchSound(float force) {
         _squelchAudioSource.volume = Mathf.Lerp(_squelchVolumes.x, _squelchVolumes.y, force);
@@ -57,6 +71,20 @@ public class PetSounds : MonoBehaviour
     }
 
 
+
+    IEnumerator CheckForTrill() {
+        while (true) {
+            // will we trill in this check, according to the trill chance, modulated by excitement?
+            if (UnityEngine.Random.value < Mathf.Lerp(_trillChanceRange.x, _trillChanceRange.y, _petBrain.excitement)) {
+                // we will trill
+                _trillAudioSource.pitch = Mathf.Lerp(_trillPitchRange.x, _trillPitchRange.y, _petBrain.excitement);
+                _trillAudioSource.clip = _trillClips.GetRandomClip();
+                _trillAudioSource.Play();
+            }
+
+            yield return new WaitForSeconds(_minTimeBetweenTrills);
+        }
+    }
 
     void OnJellyCollisionEnter(JellyMesh.JellyCollision collision) {
         // if its not time to play another squelch yet, quit

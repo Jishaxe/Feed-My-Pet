@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PetBrain : MonoBehaviour
 {
-    [SerializeField] [Range(0,1)] float _awakeness;
+    [SerializeField] [Range(0,1)] public float awakeness;
     
     /// <summary>
     /// How long it takes to react to things when fully alert
@@ -17,7 +17,7 @@ public class PetBrain : MonoBehaviour
     [SerializeField] float _sleepingReactionTime;
 
     [Space(30)]
-    [SerializeField] [Range(0,1)] float _excitement;
+    [SerializeField] [Range(0,1)] public float excitement;
 
     /// <summary>
     /// Where the excitement level will naturally end up at
@@ -29,6 +29,12 @@ public class PetBrain : MonoBehaviour
     /// </summary>
     [SerializeField] AnimationCurve _excitementChangeCurve;
 
+    /// <summary>
+    /// Adjusts wander "bumpiness"
+    /// </summary>
+    /// <value></value>
+    [SerializeField] float wanderFactor;
+
     public float hunger {
         get {
             return _hunger;
@@ -37,7 +43,7 @@ public class PetBrain : MonoBehaviour
         set {
             _hunger = Mathf.Clamp01(value);
 
-            if (value > 0.9) _interactor.shouldBeEating = false;
+            if (value > 0.7) _interactor.shouldBeEating = false;
             else _interactor.shouldBeEating = true;
         }
     }
@@ -95,7 +101,7 @@ public class PetBrain : MonoBehaviour
         }
 
         if (newMovementDirection.magnitude > 1) newMovementDirection.Normalize();
-        newMovementDirection *= _excitement;
+        newMovementDirection *= excitement;
         newMovementDirection.y = 0;
         _petMovement.movementDirection = newMovementDirection;    
 
@@ -122,42 +128,40 @@ public class PetBrain : MonoBehaviour
     IEnumerator LookForFood() {
         while (true) {
             _spottedFood = new List<FoodObject>(_foodSpawner.foodInScene);
-            yield return new WaitForSeconds(Mathf.Lerp(_sleepingReactionTime, _alertReactionTime, _awakeness));
+            yield return new WaitForSeconds(Mathf.Lerp(_sleepingReactionTime, _alertReactionTime, awakeness));
         }
     }
 
     void UpdateHunger() {
         hunger -= _hungerLoss;
-        if (hunger < 0.6f) {
-            _excitement -= 0.05f; // excitement penalty when starving
+        if (hunger < 0.3f) {
+            excitement -= 0.05f; // excitement penalty when starving
 
 
             // get excited when hungry and we see food
             if (_spottedFood.Count > 0) {
-                _excitement += 0.5f * (1 - hunger);
+                excitement += 0.5f * (1 - hunger);
             }
 
-            _excitement = Mathf.Clamp01(_excitement);
+            excitement = Mathf.Clamp01(excitement);
         }
-
-    
     }
 
     void UpdateExcitement() {
         // Tend excitement towards the _excitementTendsTo according to the curve.
         // Right now, the excitement will come back slower at 0 than at 1
 
-        if (_excitement > _excitementTendsTo + 0.01f) {
-            _excitement -= _excitementChangeCurve.Evaluate(_excitement) / 1000;
-        } else if (_excitement < _excitementTendsTo - 0.01f) {
-            _excitement += _excitementChangeCurve.Evaluate(_excitement) / 1000;
+        if (excitement > _excitementTendsTo + 0.01f) {
+            excitement -= _excitementChangeCurve.Evaluate(excitement) / 1000;
+        } else if (excitement < _excitementTendsTo - 0.01f) {
+            excitement += _excitementChangeCurve.Evaluate(excitement) / 1000;
         }
 
-        _excitement = Mathf.Clamp01(_excitement);
+        excitement = Mathf.Clamp01(excitement);
     }
 
     void ApplyAwakenessFx() {
-        _animator.speed = Mathf.Max(0.2f, _awakeness);
+        _animator.speed = Mathf.Max(0.2f, awakeness);
     }
 
     void ApplyHungerFx() {
@@ -195,6 +199,7 @@ public class PetBrain : MonoBehaviour
 
     void FoodBitten(FoodObject food) {
         this.hunger += food.hungerPerBite;
+        excitement += _excitementChangeCurve.Evaluate(excitement) / 1000;
     }
 
     void FoodEaten(FoodObject food) {
@@ -250,7 +255,10 @@ public class PetBrain : MonoBehaviour
         if (_interactor.isEating) return Vector3.zero;
         
         // wander?
-        Vector3 wander = Vector3.one * ((Mathf.PerlinNoise(Time.time, Time.time) * 2) - 1) * 100;
+        float factor = Time.time * wanderFactor;
+
+        Vector3 wander = new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
+        Debug.Log(wander);
         return wander;
     }
 
