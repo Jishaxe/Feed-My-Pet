@@ -147,7 +147,7 @@ public class PetInteractor : MonoBehaviour
         _eatFoodCoroutine = null;
     }
 
-    void Update() {
+    void FixedUpdate() {
         if (isHoldingObject) {
            
             // if the holding face is pointing up or down, find a horizontal one

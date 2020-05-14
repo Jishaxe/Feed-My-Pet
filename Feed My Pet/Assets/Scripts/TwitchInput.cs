@@ -24,6 +24,7 @@ public class TwitchInput : MonoBehaviour
         bot.StartInfo.Arguments = "\"" + indexJs + "\"";
         bot.EnableRaisingEvents = true;
 
+        bot.StartInfo.CreateNoWindow = true;
         bot.StartInfo.UseShellExecute = false;
         bot.StartInfo.RedirectStandardError = true;
         bot.StartInfo.RedirectStandardInput = true;
@@ -37,6 +38,11 @@ public class TwitchInput : MonoBehaviour
 
         bot.BeginOutputReadLine();
         bot.BeginErrorReadLine();
+    }
+
+    void Awake() {
+        //QualitySettings.vSyncCount = 0;  // VSync must be disabled
+        Application.targetFrameRate = 60;
     }
 
     void Start()
@@ -59,6 +65,8 @@ public class TwitchInput : MonoBehaviour
 
     void DataReceived( object sender, DataReceivedEventArgs eventArgs )
     {
+        if (eventArgs.Data == "" || eventArgs.Data == null) return;
+
         Debug("<color=lightblue>BOT:</color><size=14><color=white>" + eventArgs.Data + "</color></size>\n");
         if (eventArgs.Data.StartsWith("CMD")) {
             _commandsToProcess.Enqueue(eventArgs.Data.Split(new string[]{"CMD "}, StringSplitOptions.None)[1]);
@@ -68,6 +76,8 @@ public class TwitchInput : MonoBehaviour
  
     void ErrorReceived( object sender, DataReceivedEventArgs eventArgs )
     {
+        if (eventArgs.Data == "" || eventArgs.Data == null) return;
+
         Err("<color=red>BOT:</color><size=14><color=white>" + eventArgs.Data + "</color></size>\n");
     }
  

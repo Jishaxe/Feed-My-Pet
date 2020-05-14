@@ -18,7 +18,6 @@ public class PetMovement : MonoBehaviour
     void Start()
     {
         _jellyMesh = GetComponent<JellyMesh>();
-        Debug.Log("eee");
     }
 
     /// <summary>
@@ -50,6 +49,7 @@ public class PetMovement : MonoBehaviour
 
     
     void OnDrawGizmos() {
+        if (!Application.isPlaying) return;
         foreach (JellyMesh.ReferencePoint referencePoint in _jellyMesh.ReferencePoints) {
             Gizmos.DrawWireSphere(referencePoint.GameObject.transform.position, 0.1f);
             //Gizmos.DrawLine(referencePoint.transform.position, referencePoint.transform.position + movementForce);
@@ -57,14 +57,14 @@ public class PetMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         foreach (JellyMesh.ReferencePoint referencePoint in GetTopFourReferencePoints()) {
             referencePoint.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(movementDirection * movementForce, _jellyMesh.CentralPoint.transform.position, ForceMode.Impulse);
         }
 
         foreach (JellyMesh.ReferencePoint referencePoint in GetBottomFourReferencePoints()) {
-            referencePoint.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(-movementDirection * movementForce, _jellyMesh.CentralPoint.transform.position);
+            referencePoint.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(-movementDirection * movementForce, _jellyMesh.CentralPoint.transform.position, ForceMode.Impulse);
         }
 
         _jellyMesh.CentralPoint.GameObject.GetComponent<Rigidbody>().AddTorque(new Vector3(movementDirection.z, 0, movementDirection.x) * centerMovementForce);

@@ -250,7 +250,7 @@ public class PetBrain : MonoBehaviour
         if (_interactor.isEating) return Vector3.zero;
         
         // wander?
-        Vector3 wander = Vector3.one * ((Mathf.PerlinNoise(Time.time, Time.time) * 2) - 1);
+        Vector3 wander = Vector3.one * ((Mathf.PerlinNoise(Time.time, Time.time) * 2) - 1) * 100;
         return wander;
     }
 

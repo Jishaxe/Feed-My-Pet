@@ -15,7 +15,7 @@ Bot.on('error', err => {
 })
  
 Bot.on('message', chatter => {
-  if(chatter.message === '!feed') {
+  if(chatter.message.toLowerCase().includes("!feed")) {
       console.log("CMD feed");
   }
 })
