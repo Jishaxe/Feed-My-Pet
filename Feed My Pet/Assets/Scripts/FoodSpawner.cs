@@ -17,9 +17,12 @@ public class FoodSpawner : MonoBehaviour
     public Material indicatorMaterial;
     public Transform spawnPoint;
     public Text countText;
-
+    [Space(30)]
+    public AudioSource _audioSource;
+    public SoundClipContainer _windingSounds;
+    public SoundClipContainer _spawningSounds;
+    [Space(30)]
     public int maxFoodInScene;
-
     public float spawnForce;
     
     /// <summary>
@@ -55,8 +58,9 @@ public class FoodSpawner : MonoBehaviour
     IEnumerator StartFiring() {
         _isFiring = true;
         _animator.SetBool("Winding", true);
-        
-        yield return new WaitForSeconds(0.8f);
+        _audioSource.PlayOneShot(_windingSounds.GetRandomClip());
+
+        yield return new WaitForSeconds(1.5f);
 
         // Make sure we haven't been interrupted
         if (_foodSpawnQueue.Count == 0 || !isOpen) {
@@ -96,19 +100,28 @@ public class FoodSpawner : MonoBehaviour
     public void AnimatorSpawnFood() {
         if (_foodSpawnQueue.Count == 0 || !isOpen || !_isFiring) return;
 
+
+
         UpdateAnimatorSpeed();
         
         FoodSpawnDefinition food = _foodSpawnQueue.Dequeue();
     
         FoodObject newFood = Instantiate(foodPrefab.gameObject).GetComponent<FoodObject>();
-        newFood.SetColor(food.color);
         newFood.transform.position = spawnPoint.position;
         newFood.GetComponent<Rigidbody>().AddForce(spawnPoint.forward * spawnForce * (Random.value + 1f), ForceMode.Impulse);
         newFood.spawner = this;
 
-        SetIndicatorColor(food.color);
+        newFood.SetColor(food.color);
 
         foodInScene.Add(newFood);
+    }
+
+    public void AnimatorAboutToSpawn() {
+        if (_foodSpawnQueue.Count == 0) return;
+
+        FoodSpawnDefinition nextFood = _foodSpawnQueue.Peek();
+        SetIndicatorColor(nextFood.color);
+        _audioSource.PlayOneShot(_spawningSounds.GetRandomClip());
     }
 
     void Update()
