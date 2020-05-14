@@ -56,7 +56,7 @@ public class TwitchInput : MonoBehaviour
             string cmd = _commandsToProcess.Dequeue();
 
             if (cmd == "feed") {
-                _spawner.SpawnFoodRandomly();
+                _spawner.QueueSpawn(1);
                 continue;
             }
         }

@@ -41,8 +41,7 @@ public class FoodObject : MonoBehaviour
         munchFx.Play();
     }
 
-    void Start() {
-        Color color = Random.ColorHSV(0f, 1f, 0.25f, 0.8f, 1f, 1f);
+    public void SetColor(Color color) {
         GetComponentInChildren<Renderer>().material.color = color;
         var main = munchFx.main;
         main.startColor = color;
