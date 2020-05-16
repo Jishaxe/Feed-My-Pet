@@ -5092,17 +5092,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sounds:
   - clip: {fileID: 8300000, guid: 1b8f9857cc6426546af9f28970b4a882, type: 3}
-    chance: 0.631
+    chance: 0.844
   - clip: {fileID: 8300000, guid: 043c4ae158f274c4a87dc568882326e3, type: 3}
-    chance: 0.677
+    chance: 0.793
   - clip: {fileID: 8300000, guid: 45e7161bd9b041643918b7fa030f1523, type: 3}
-    chance: 0.214
+    chance: 0.117
   - clip: {fileID: 8300000, guid: 5f89a623ac4d4e9468303313f5367a89, type: 3}
-    chance: 0.208
+    chance: 0.107
   - clip: {fileID: 8300000, guid: 0d179ac335fdd844995a82d30f4383bb, type: 3}
-    chance: 0.86
+    chance: 0.732
   - clip: {fileID: 8300000, guid: 6e21284bb64488a409aefd3291b73ee1, type: 3}
-    chance: 0.905
+    chance: 0.768
 --- !u!1 &2548528890266120905
 GameObject:
   m_ObjectHideFlags: 0

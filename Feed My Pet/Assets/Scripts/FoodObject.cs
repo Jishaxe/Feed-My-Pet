@@ -52,8 +52,9 @@ public class FoodObject : MonoBehaviour
 
     public void SetColor(Color color) {
         GetComponentInChildren<Renderer>().material.color = color;
+        Debug.Log(munchFx);
         var main = munchFx.main;
-        main.startColor = color;
+        main.startColor = new ParticleSystem.MinMaxGradient(color);
     }
 
     public void Eaten() {

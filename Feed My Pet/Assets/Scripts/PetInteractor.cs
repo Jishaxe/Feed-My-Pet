@@ -116,6 +116,9 @@ public class PetInteractor : MonoBehaviour
 
 
         while (food.bitesLeft > 0 && shouldBeEating) {
+            _holdDistance = 0.3f;
+            yield return new WaitForSeconds(1f);
+
             _sounds.PlayOpenMouthSound();
 
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.3f, 0.8f));
@@ -128,13 +131,11 @@ public class PetInteractor : MonoBehaviour
             _sounds.PlayCrunchSound();
 
             yield return new WaitForSeconds(0.8f);
-
-            _holdDistance = 0.3f;
-
+            
             _sounds.PlayMunchSounds();
 
             gameObject.SendMessage("FoodBitten", food);
-            yield return new WaitForSeconds(1f);
+
         }
 
         DropObject();
