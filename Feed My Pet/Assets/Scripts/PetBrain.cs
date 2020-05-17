@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,7 +17,13 @@ public class PetBrain : MonoBehaviour
     /// </summary>
     [SerializeField] float _tickSeconds;
 
-    
+
+    /// <summary>
+    /// List of available actions
+    /// </summary>
+    List<BasePetAction> _actions = new List<BasePetAction>();
+    BasePetAction _currentAction = new DoNothingAction();
+
     public bool isPlayerControlled = false;
 
     PetMovement _petMovement;
@@ -43,6 +50,16 @@ public class PetBrain : MonoBehaviour
         _interactor = GetComponent<PetInteractor>();
         _sounds = GetComponent<PetSounds>();
         _stats = GetComponent<PetStats>();
+        
+        string debugActionList = "";
+        // Use reflection to find every type that inherits from BasePetAction, instansiate it, and stick it in _actions
+        foreach (var type in System.AppDomain.CurrentDomain.GetAllDerivedTypes(typeof(BasePetAction))) {
+            var action = (BasePetAction)Activator.CreateInstance(type);
+            _actions.Add(action);
+            debugActionList += type.ToString() + " ";
+        }
+
+        Debug.Log("Loaded " + _actions.Count + " pet actions: " + debugActionList);
 
         StartCoroutine(Tick());
         StartCoroutine(LookForFood());
@@ -66,7 +83,7 @@ public class PetBrain : MonoBehaviour
     }
 
     /// <summary>
-    /// This is only called at certain intevals for non-urgent calculations (for example, adjusting excitement)
+    /// Add up all the scorers and pick the next action
     /// </summary>
     IEnumerator Tick() {
         while (true) {
