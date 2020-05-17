@@ -45,9 +45,11 @@ public class PetSounds : MonoBehaviour
 
     float timeLastPlayedSquelch = 0;
     PetBrain _petBrain;
+    PetStats _petStats;
 
     void Start() {
         _petBrain = GetComponent<PetBrain>();
+        _petStats = GetComponent<PetStats>();
         StartCoroutine(CheckForTrill());
     }
 
@@ -75,9 +77,9 @@ public class PetSounds : MonoBehaviour
     IEnumerator CheckForTrill() {
         while (true) {
             // will we trill in this check, according to the trill chance, modulated by excitement?
-            if (UnityEngine.Random.value < Mathf.Lerp(_trillChanceRange.x, _trillChanceRange.y, _petBrain.excitement)) {
+            if (UnityEngine.Random.value < Mathf.Lerp(_trillChanceRange.x, _trillChanceRange.y, _petStats.excitement)) {
                 // we will trill
-                _trillAudioSource.pitch = Mathf.Lerp(_trillPitchRange.x, _trillPitchRange.y, _petBrain.excitement);
+                _trillAudioSource.pitch = Mathf.Lerp(_trillPitchRange.x, _trillPitchRange.y, _petStats.excitement);
                 _trillAudioSource.clip = _trillClips.GetRandomClip();
                 _trillAudioSource.Play();
             }
