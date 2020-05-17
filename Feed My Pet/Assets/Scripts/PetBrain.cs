@@ -110,10 +110,11 @@ public class PetBrain : MonoBehaviour
                 if (_currentAction.isInterruptable || !_currentAction.isRunning) {
                     // Stop the current action, and start the next action
                     _currentAction.StopAction();
+                    _currentAction.isRunning = false;
                     if (_currentActionCoroutine != null) StopCoroutine(_currentActionCoroutine);
                     _currentAction = highestAction;
                     _currentActionCoroutine = StartCoroutine(highestAction.StartAction());
-
+                    _currentAction.isRunning = true;
                     Debug.Log("Switched to action " + _currentAction.GetType().ToString() + " with a score of " + highestScore);
                 }
             } else {

@@ -107,13 +107,14 @@ public class PetInteractor : MonoBehaviour
 
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.3f, 0.8f));
             _holdDistance = 0.2f;
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.1f, 0.3f));
 
             // calculate plane to use for slicing the food
             Vector3 planePosition = this.transform.position + _holdDirection * (_holdDistance + 0.05f);
             food.Bite(planePosition, _holdDirection);
             _sounds.PlayCrunchSound();
-
+            
+            if (food.bitesLeft == 0) _holdDistance = 0f; // when food is finished, absorb completely
             yield return new WaitForSeconds(0.8f);
             
             _sounds.PlayMunchSounds();

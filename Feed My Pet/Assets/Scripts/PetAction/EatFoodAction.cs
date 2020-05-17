@@ -29,7 +29,6 @@ public class EatFoodAction: BasePetAction
     public override IEnumerator StartAction() { 
         // we can be interrupted while moving to the food
         isInterruptable = true;
-        isRunning = true;
 
         _isEating = false;
         _target = _observer.GetClosestFood(true);
@@ -52,7 +51,6 @@ public class EatFoodAction: BasePetAction
     /// Stops this action, either at its natural end or interrupt it
     /// </summary>
     public override void StopAction() {
-        isRunning = false;
         _target = null;
         _isNearby = false;
     }
