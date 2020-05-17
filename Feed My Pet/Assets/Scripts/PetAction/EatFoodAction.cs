@@ -5,28 +5,75 @@ using UnityEngine;
 
 public class EatFoodAction: BasePetAction
 {
-    /// <summary>
-    /// If this is true, then this behaviour is still running and the tick will not make another decision
-    /// The action may be able to be interrupted by setting this to false
-    /// </summary>
-    public bool isRunning = false;
+    FoodObject _target;
+    bool _isEating = false;
+    bool _isNearby = false;
 
     /// <summary>
     /// Given the Pet GO, calculate a score for this behaviour. The top scoring behaviour will be picked for that tick
     /// </summary>
     /// <param name="pet">Pet GO</param>
     /// <returns></returns>
-    public int GetScore(GameObject pet) { throw new NotImplementedException(); }
+    public override int GetScore() { 
+        // we can't eat food if there is none
+        if (_observer.GetClosestFood(true) == null) return -100;
+
+        // if there is food, return score based on hunger
+        return (int)Mathf.Lerp(100, 0, _stats.hunger);
+    }
 
     /// <summary>
     /// Starts the main routine for this action, make sure to set isRunning to false when you're done
     /// </summary>
     /// <returns></returns>
-    public IEnumerator StartAction(GameObject pet) { throw new NotImplementedException(); }
+    public override IEnumerator StartAction() { 
+        // we can be interrupted while moving to the food
+        isInterruptable = true;
+        isRunning = true;
+
+        _isEating = false;
+        _target = _observer.GetClosestFood(true);
+
+        yield return new WaitUntil(() => _isNearby);
+
+        // we can't be interrupted while eating the food
+        _interactor.EatFood(_target);
+        _isEating = true;
+        isInterruptable = false;
+
+        // wait until food is eaten, then we're done
+        yield return new WaitUntil(() => _target.bitesLeft == 0);
+
+        // done eating
+        isRunning = false;
+    }
+
+    /// <summary>
+    /// Stops this action, either at its natural end or interrupt it
+    /// </summary>
+    public override void StopAction() {
+        isRunning = false;
+        _target = null;
+        _isNearby = false;
+    }
 
     /// <summary>
     /// Where should the pet move in this update?
     /// </summary>
     /// <returns></returns>
-    public Vector3 GetMovement() { throw new NotImplementedException(); }
+    public override Vector3 GetMovement() { 
+        if (!_isEating) {
+            _target = _observer.GetClosestFood(true);
+            float distanceToFood = (_target.transform.position - _pet.transform.position).magnitude;
+
+            if (distanceToFood > _interactor.interactionDistance) {
+                return (_target.transform.position - _pet.transform.position).normalized;
+            } else {
+                _isNearby = true;
+            }
+        }
+
+        // stop moving if we're eating or nearby the food
+        return Vector3.zero;
+    }
 }

@@ -37,9 +37,6 @@ public class PetStats : MonoBehaviour
 
         set {
             _hunger = Mathf.Clamp01(value);
-
-            if (value > 0.7) _interactor.shouldBeEating = false;
-            else _interactor.shouldBeEating = true;
         }
     }
     [SerializeField] [Range(0,1)] float _hunger;

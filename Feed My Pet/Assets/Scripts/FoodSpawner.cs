@@ -50,10 +50,6 @@ public class FoodSpawner : MonoBehaviour
             _foodSpawnQueue.Enqueue(spawn);
         }
     }
-
-    void SpawnFood(Vector3 position) {
-
-    }
     
     IEnumerator StartFiring() {
         _isFiring = true;
@@ -138,5 +134,9 @@ public class FoodSpawner : MonoBehaviour
         else isOpen = true;
 
         countText.text = _foodSpawnQueue.Count.ToString();
+    }
+
+    void OnFoodEaten(FoodObject food) {
+        this.foodInScene.Remove(food);
     }
 }

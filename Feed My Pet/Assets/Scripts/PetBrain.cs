@@ -23,6 +23,7 @@ public class PetBrain : MonoBehaviour
     /// </summary>
     List<BasePetAction> _actions = new List<BasePetAction>();
     BasePetAction _currentAction = new DoNothingAction();
+    Coroutine _currentActionCoroutine = null;
 
     public bool isPlayerControlled = false;
 
@@ -35,8 +36,6 @@ public class PetBrain : MonoBehaviour
     StockpileArea _stockpileArea;
     PetSounds _sounds;
     PetStats _stats;
-
-    List<FoodObject> _spottedFood = new List<FoodObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -55,6 +54,7 @@ public class PetBrain : MonoBehaviour
         // Use reflection to find every type that inherits from BasePetAction, instansiate it, and stick it in _actions
         foreach (var type in System.AppDomain.CurrentDomain.GetAllDerivedTypes(typeof(BasePetAction))) {
             var action = (BasePetAction)Activator.CreateInstance(type);
+            action.Init(gameObject);
             _actions.Add(action);
             debugActionList += type.ToString() + " ";
         }
@@ -62,7 +62,6 @@ public class PetBrain : MonoBehaviour
         Debug.Log("Loaded " + _actions.Count + " pet actions: " + debugActionList);
 
         StartCoroutine(Tick());
-        StartCoroutine(LookForFood());
     }
 
     // Update is called once per frame
@@ -73,13 +72,19 @@ public class PetBrain : MonoBehaviour
         if (isPlayerControlled) {
             newMovementDirection = PlayerControl();
         } else {
-            newMovementDirection = GetMovement();
+            newMovementDirection = _currentAction.GetMovement();
         }
 
         if (newMovementDirection.magnitude > 1) newMovementDirection.Normalize();
         newMovementDirection *= _stats.excitement;
         newMovementDirection.y = 0;
-        _petMovement.movementDirection = newMovementDirection;    
+        _petMovement.movementDirection = newMovementDirection;  
+
+        _currentAction.Update();  
+    }
+
+    void FixedUpdate() {
+        _currentAction.FixedUpdate();
     }
 
     /// <summary>
@@ -87,43 +92,44 @@ public class PetBrain : MonoBehaviour
     /// </summary>
     IEnumerator Tick() {
         while (true) {
+            // Go through every action, calculate the score, and find the top scorer
+            int highestScore = int.MinValue;
+            BasePetAction highestAction = null;
+
+            foreach (BasePetAction action in _actions) {
+                int score = action.GetScore();
+                if (score > highestScore) {
+                    highestScore = score;
+                    highestAction = action;
+                }
+            }
+
+            // If the new action is different from the current one
+            if (highestAction != _currentAction) {
+                // If the current is interruptable, or it's not interruptable but has stopped running
+                if (_currentAction.isInterruptable || !_currentAction.isRunning) {
+                    // Stop the current action, and start the next action
+                    _currentAction.StopAction();
+                    if (_currentActionCoroutine != null) StopCoroutine(_currentActionCoroutine);
+                    _currentAction = highestAction;
+                    _currentActionCoroutine = StartCoroutine(highestAction.StartAction());
+
+                    Debug.Log("Switched to action " + _currentAction.GetType().ToString() + " with a score of " + highestScore);
+                }
+            } else {
+                if (!_currentAction.isRunning) {
+                    Debug.Log("Replaying action " + _currentAction.GetType().ToString() + " with a score of " + highestScore);
+                    _currentAction.StopAction();
+                    if (_currentActionCoroutine != null) StopCoroutine(_currentActionCoroutine);
+                    _currentActionCoroutine = StartCoroutine(highestAction.StartAction());
+                }
+            }
 
             yield return new WaitForSeconds(_tickSeconds);
         }
     }
 
-    /// <summary>
-    /// Looks for food and stores it in the seen food array, checks every few seconds according to awakeness
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator LookForFood() {
-        while (true) {
-            _spottedFood = new List<FoodObject>(_foodSpawner.foodInScene);
-            yield return new WaitForSeconds(_stats.GetReactionTime());
-        }
-    }
 
-
-    /// <summary>
-    /// Get closest food to the pet
-    /// </summary>
-    /// <param name="searchStockpiles">true if we should search in stockpiles too</param>
-    /// <returns>closest food, or null if none</returns>
-    FoodObject GetClosestFood(bool searchStockpiles) {
-        FoodObject result = null;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (FoodObject food in _spottedFood) {
-            if (food.stockpileArea != null && !searchStockpiles) continue;
-            float dist = (food.transform.position - this.transform.position).magnitude;
-            if (dist < closestDistance) {
-                result = food;
-                closestDistance = dist;
-            }
-        }
-
-        return result;
-    }
 
     void FoodBitten(FoodObject food) {
         _stats.hunger += food.hungerPerBite;
@@ -132,11 +138,11 @@ public class PetBrain : MonoBehaviour
 
     void FoodEaten(FoodObject food) {
         food.Eaten();
-        this._spottedFood.Remove(food);
         Destroy(food.gameObject);
     }
 
     Vector3 GetMovement() {
+        /*
         if (_spottedFood.Count > 0) {
             // there is food on the map and we are hungry
             if (_interactor.shouldBeEating) {
@@ -186,7 +192,8 @@ public class PetBrain : MonoBehaviour
         float factor = Time.time * wanderFactor;
 
         Vector3 wander = new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
-        return wander;
+        return wander;*/
+        return Vector3.zero;
     }
 
     Vector3 PlayerControl() {

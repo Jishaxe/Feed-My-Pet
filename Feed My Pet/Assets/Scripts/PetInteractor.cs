@@ -11,8 +11,7 @@ public class PetInteractor : MonoBehaviour
 {
     [SerializeField] float _holdForce = 1f;
     [SerializeField] float _holdYOffset = 0.1f;
-    
-    bool _shouldBeEating = true;
+
     
     public bool isEating = false;
     public bool isHoldingObject = false;
@@ -34,21 +33,7 @@ public class PetInteractor : MonoBehaviour
     }
 
     PetMovement _petMovement;
- 
 
-    /// <summary>
-    /// Whether we should be trying to eat food right now
-    /// If set to false while eating, it will drop the food
-    /// </summary>
-    public bool shouldBeEating {
-        get {
-            return _shouldBeEating;
-        }
-
-        set {
-            _shouldBeEating = value;
-        }
-    }
 
     /// <summary>
     /// How close we need to be to an object to interact with it
@@ -106,7 +91,6 @@ public class PetInteractor : MonoBehaviour
     }
 
     IEnumerator EatFoodCoroutine(FoodObject food) {
-        isEating = true;
         PickUpObject(food);
 
          _holdDistance = 0.3f; 
@@ -115,7 +99,7 @@ public class PetInteractor : MonoBehaviour
         yield return new WaitUntil(() => _petMovement.IsSettled());
 
 
-        while (food.bitesLeft > 0 && shouldBeEating) {
+        while (food.bitesLeft > 0) {
             _holdDistance = 0.3f;
             yield return new WaitForSeconds(1f);
 
@@ -143,8 +127,7 @@ public class PetInteractor : MonoBehaviour
         if (food.bitesLeft == 0) {
             gameObject.SendMessage("FoodEaten", food);
         }
-
-        isEating = false;
+        
         _eatFoodCoroutine = null;
     }
 

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class FoodObject : MonoBehaviour
 {
+    public delegate void FoodEvent(FoodObject food);
+    public event FoodEvent OnFoodEaten;
+
     public ParticleSystem munchFx;
     public FoodSpawner spawner;
     public GameObject meshObject;
@@ -52,7 +55,6 @@ public class FoodObject : MonoBehaviour
 
     public void SetColor(Color color) {
         GetComponentInChildren<Renderer>().material.color = color;
-        Debug.Log(munchFx);
         var main = munchFx.main;
         main.startColor = new ParticleSystem.MinMaxGradient(color);
     }
@@ -63,6 +65,7 @@ public class FoodObject : MonoBehaviour
         munchFx.gameObject.GetComponent<PSDieAfterLastParticle>().enabled = true;
         munchFx.gameObject.transform.parent = null;
         spawner.foodInScene.Remove(this);
+        this.OnFoodEaten?.Invoke(this);
     }
 
 
