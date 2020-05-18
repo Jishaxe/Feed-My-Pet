@@ -10,7 +10,7 @@ public class DoNothingAction: BasePetAction
     /// </summary>
     /// <param name="pet">Pet GO</param>
     /// <returns></returns>
-    public override int GetScore() { return 50; }
+    public override int GetScore() { return 0; }
 
     /// <summary>
     /// Starts the main routine for this action, make sure to set isRunning to false when you're done

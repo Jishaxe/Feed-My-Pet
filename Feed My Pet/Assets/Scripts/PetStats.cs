@@ -29,6 +29,12 @@ public class PetStats : MonoBehaviour
     /// </summary>
     [SerializeField] public AnimationCurve _excitementChangeCurve;
 
+    [Space(30)]
+    [SerializeField] [Range(0,1)] public float fun;
+    [SerializeField] float _funLoss;
+
+
+
 
     public float hunger {
         get {
@@ -39,6 +45,7 @@ public class PetStats : MonoBehaviour
             _hunger = Mathf.Clamp01(value);
         }
     }
+    [Space(30)]
     [SerializeField] [Range(0,1)] float _hunger;
     [SerializeField] float _hungerLoss;
     [SerializeField] Color _hungryColour;
@@ -85,6 +92,7 @@ public class PetStats : MonoBehaviour
         while (true) {
             UpdateExcitement();
             UpdateHunger();
+            UpdateFun();
             ApplyHungerFx();
             ApplyAwakenessFx();
 
@@ -97,11 +105,11 @@ public class PetStats : MonoBehaviour
         if (hunger < 0.3f) {
             excitement -= 0.05f; // excitement penalty when starving
 
-            /*
+            
             // get excited when hungry and we see food
-            if (_spottedFood.Count > 0) {
+            if (_foodSpawner.foodInScene.Count > 0) {
                 excitement += 0.5f * (1 - hunger);
-            }*/
+            }
 
             excitement = Mathf.Clamp01(excitement);
         }
@@ -118,6 +126,11 @@ public class PetStats : MonoBehaviour
         }
 
         excitement = Mathf.Clamp01(excitement);
+    }
+
+    void UpdateFun() {
+        fun -= _funLoss;
+        fun = Mathf.Clamp01(fun);
     }
 
     /// <summary>

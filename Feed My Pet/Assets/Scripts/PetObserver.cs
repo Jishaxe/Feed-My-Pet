@@ -6,8 +6,11 @@ public class PetObserver : MonoBehaviour
 {
     FoodSpawner _spawner;
 
+    public StockpileArea stockpileArea;
+
     void Start() {
         _spawner = GameObject.Find("FoodSpawner").GetComponent<FoodSpawner>();
+        stockpileArea = GameObject.Find("StockpileArea").GetComponent<StockpileArea>();
     }
 
     /// <summary>

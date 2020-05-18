@@ -11,13 +11,14 @@ public class PetInteractor : MonoBehaviour
 {
     [SerializeField] float _holdForce = 1f;
     [SerializeField] float _holdYOffset = 0.1f;
-
+    [SerializeField] float _throwForce = 1f;
     
     public bool isEating = false;
     public bool isHoldingObject = false;
     public FoodObject currentHeldObject = null;
     float _holdDistance = 0.4f;
     float _prevObjectDrag; // store previous rb drag so we can restore after dropping
+
 
     PetSounds _sounds;
     PetFaceDirection _heldFaceDirection;
@@ -66,6 +67,8 @@ public class PetInteractor : MonoBehaviour
         food.GetComponent<Rigidbody>().drag = 10f; // stop it from osciliating when being picked up
         _heldFaceDirection = GetClosestFacePosition(food.transform.position);
 
+        _holdDistance = 0.3f; 
+
         StartCoroutine(PickUpObjectCoroutine());
 
     }
@@ -88,6 +91,11 @@ public class PetInteractor : MonoBehaviour
 
         currentHeldObject.GetComponent<Rigidbody>().drag = _prevObjectDrag;
         currentHeldObject = null;
+    }
+
+    public void ThrowObject() {
+        currentHeldObject.GetComponent<Rigidbody>().AddForce(_holdDirection * _throwForce, ForceMode.Impulse);
+        DropObject();
     }
 
     IEnumerator EatFoodCoroutine(FoodObject food) {

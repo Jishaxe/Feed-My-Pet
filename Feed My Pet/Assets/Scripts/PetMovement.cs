@@ -13,6 +13,7 @@ public class PetMovement : MonoBehaviour
     public Vector3 movementDirection;
     public float movementForce;
     public float centerMovementForce;
+    public float wanderFactor;
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +69,15 @@ public class PetMovement : MonoBehaviour
         }
 
         _jellyMesh.CentralPoint.GameObject.GetComponent<Rigidbody>().AddTorque(new Vector3(movementDirection.z, 0, movementDirection.x) * centerMovementForce);
+    }
+
+    /// <summary>
+    /// Direction for random wander
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 Wander() {
+        float factor = Time.time * wanderFactor;
+        return new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
     }
 
     /// <summary>

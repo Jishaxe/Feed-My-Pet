@@ -3,10 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EatFoodAction: BasePetAction
+public class PlayWithFood: BasePetAction
 {
     FoodObject _target;
-    bool _isEating = false;
     bool _isNearby = false;
 
     /// <summary>
@@ -15,36 +14,46 @@ public class EatFoodAction: BasePetAction
     /// <param name="pet">Pet GO</param>
     /// <returns></returns>
     public override int GetScore() { 
-        // we can't eat food if there is none
+        // we can't move food if there is none
         if (_foodSpawner.foodInScene.Count == 0) return -100;
 
-        // if there is food, return score based on hunger
-        return (int)Mathf.Lerp(100, 0, _stats.hunger);
-    }
+        FoodObject closestFood = _observer.GetClosestFood(true);
+
+        // if all our food is in stockpile, don't move anything
+        if (closestFood == null) return -100;
+
+        // more likely to play with food when bored
+        int score = (int)Mathf.Lerp(50, 0, _stats.fun);
+
+        float distanceToFood = (closestFood.transform.position - _pet.transform.position).magnitude;
+        if (distanceToFood < 1f) score += 10; // if we're near food, more likely to play with it
+
+        return score;
+     }
 
     /// <summary>
     /// Starts the main routine for this action, make sure to set isRunning to false when you're done
     /// </summary>
     /// <returns></returns>
     public override IEnumerator StartAction() { 
-        // we can be interrupted while moving to the food
+        _isNearby = false;
         isInterruptable = true;
 
-        _isNearby = false;
-        _isEating = false;
-        _target = _observer.GetClosestFood(true);
-
+        // move towards the food to stockpile
         yield return new WaitUntil(() => _isNearby);
 
-        // we can't be interrupted while eating the food
-        _interactor.EatFood(_target);
-        _isEating = true;
-        isInterruptable = false;
+        _interactor.PickUpObject(_target);
 
-        // wait until food is eaten, then we're done
-        yield return new WaitUntil(() => _target.bitesLeft == 0);
+        // wander around for a bit with the food
+        yield return new WaitForSeconds(UnityEngine.Random.Range(0.5f, 5f));
+        
+        // throw food
+        _interactor.ThrowObject();
 
-        // done eating
+        _stats.fun += 0.1f; // playing with food not very fun :(
+
+        yield return new WaitForSeconds(1f);
+
         isRunning = false;
     }
 
@@ -52,6 +61,8 @@ public class EatFoodAction: BasePetAction
     /// Stops this action, either at its natural end or interrupt it
     /// </summary>
     public override void StopAction() {
+        Debug.Log("stopped!");
+        _interactor.DropObject();
     }
 
     /// <summary>
@@ -59,8 +70,10 @@ public class EatFoodAction: BasePetAction
     /// </summary>
     /// <returns></returns>
     public override Vector3 GetMovement() { 
-        if (!_isEating) {
+        if (!_interactor.isHoldingObject) {
             _target = _observer.GetClosestFood(true);
+            if (_target == null) return Vector3.zero;
+            
             float distanceToFood = (_target.transform.position - _pet.transform.position).magnitude;
 
             if (distanceToFood > _interactor.interactionDistance) {
@@ -68,9 +81,10 @@ public class EatFoodAction: BasePetAction
             } else {
                 _isNearby = true;
             }
+        } else {
+            return _petMovement.Wander(); // wander around for  abit when holding food
         }
 
-        // stop moving if we're eating or nearby the food
         return Vector3.zero;
     }
 }
