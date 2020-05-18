@@ -15,6 +15,17 @@ public class BasePetAction
     protected PetObserver _observer;
 
     /// <summary>
+    /// The Time.time that this action was last started at
+    /// </summary>
+    public float actionLastStartedAt = 0;
+    
+    /// <summary>
+    /// If set to more than zero, this action will not be repeated until these seconds have passed
+    /// This time includes the time it takes to execute the action
+    /// </summary>
+    public float debounce = 0;
+
+    /// <summary>
     /// If this is true, then this behaviour is still running and the tick will not make another decision
     /// The action may be able to be interrupted by setting this to false
     /// </summary>

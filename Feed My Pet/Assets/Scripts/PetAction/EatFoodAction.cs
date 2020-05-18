@@ -44,6 +44,8 @@ public class EatFoodAction: BasePetAction
         // wait until food is eaten, then we're done
         yield return new WaitUntil(() => _target.bitesLeft == 0);
 
+        yield return new WaitForSeconds(0.5f);
+        
         // done eating
         isRunning = false;
     }

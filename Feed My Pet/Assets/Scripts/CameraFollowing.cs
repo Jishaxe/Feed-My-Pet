@@ -33,9 +33,9 @@ public class CameraFollowing : MonoBehaviour
     {
         currentTracked = Vector3.Lerp(currentTracked, target.transform.position, followSpeed);
 
-        float xOffset = (centerPoint.position.z - target.transform.position.z) * xSpeed;
-        float yOffset = (centerPoint.position.x - target.transform.position.x) * ySpeed;
-        float zOffset = (target.transform.position.z - centerPoint.position.z) * zSpeed;
+        float xOffset = (centerPoint.position.z - currentTracked.z) * xSpeed;
+        float yOffset = (centerPoint.position.x - currentTracked.x) * ySpeed;
+        float zOffset = (currentTracked.z - centerPoint.position.z) * zSpeed;
 
         transform.localRotation = centerRotation * Quaternion.Euler(Mathf.Clamp(yOffset, yLimits.x, yLimits.y), Mathf.Clamp(xOffset, xLimits.x, xLimits.y), Mathf.Clamp(zOffset, zLimits.x, zLimits.y));
     }

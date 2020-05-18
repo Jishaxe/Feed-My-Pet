@@ -22,7 +22,7 @@ public class PetBrain : MonoBehaviour
     /// List of available actions
     /// </summary>
     List<BasePetAction> _actions = new List<BasePetAction>();
-    BasePetAction _currentAction = new DoNothingAction();
+    BasePetAction _currentAction = new WanderAimlesslyAction();
     Coroutine _currentActionCoroutine = null;
 
     public bool isPlayerControlled = false;
@@ -95,6 +95,9 @@ public class PetBrain : MonoBehaviour
             BasePetAction highestAction = null;
 
             foreach (BasePetAction action in _actions) {
+                // skip this action if it has a debounce and not enough time has passed since it was last executed
+                if (Time.time - action.actionLastStartedAt < action.debounce) continue; 
+
                 int score = action.GetScore();
                 if (score > highestScore) {
                     highestScore = score;
@@ -109,6 +112,7 @@ public class PetBrain : MonoBehaviour
                     // Stop the current action, and start the next action
                     _currentAction.StopAction();
                     _currentAction.isRunning = false;
+                    _currentAction.actionLastStartedAt = Time.time;
                     if (_currentActionCoroutine != null) StopCoroutine(_currentActionCoroutine);
                     _currentAction = highestAction;
                     _currentActionCoroutine = StartCoroutine(highestAction.StartAction());
@@ -118,6 +122,7 @@ public class PetBrain : MonoBehaviour
             } else {
                 if (!_currentAction.isRunning) {
                     Debug.Log("Replaying action " + _currentAction.GetType().ToString() + " with a score of " + highestScore);
+                    _currentAction.actionLastStartedAt = Time.time;
                     _currentAction.StopAction();
                     if (_currentActionCoroutine != null) StopCoroutine(_currentActionCoroutine);
                     _currentActionCoroutine = StartCoroutine(highestAction.StartAction());

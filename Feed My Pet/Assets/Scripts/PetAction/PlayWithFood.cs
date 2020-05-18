@@ -23,7 +23,7 @@ public class PlayWithFood: BasePetAction
         if (closestFood == null) return -100;
 
         // more likely to play with food when bored
-        int score = (int)Mathf.Lerp(50, 0, _stats.fun);
+        int score = (int)Mathf.Lerp(30, 0, _stats.fun);
 
         float distanceToFood = (closestFood.transform.position - _pet.transform.position).magnitude;
         if (distanceToFood < 1f) score += 10; // if we're near food, more likely to play with it
@@ -36,6 +36,7 @@ public class PlayWithFood: BasePetAction
     /// </summary>
     /// <returns></returns>
     public override IEnumerator StartAction() { 
+        debounce = 10f;
         _isNearby = false;
         isInterruptable = true;
 
