@@ -22,6 +22,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Metal rods
+    second: {fileID: 2100000, guid: 3eba9e951ccecbd47b6cd7ddc1111896, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: No Name
     second: {fileID: 2100000, guid: 57e1ab618ef11494ebe61814ab8f07bb, type: 2}
   - first:
@@ -34,6 +39,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Walls
     second: {fileID: 2100000, guid: 48fe1432d6d06a049bf95df4bf7fea91, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Window
+    second: {fileID: 2100000, guid: 358dbce3f3335a647bc36a5956765da2, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

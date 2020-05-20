@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 /// <summary>
@@ -24,6 +25,9 @@ public class FoodSpawner : MonoBehaviour
     [Space(30)]
     public int maxFoodInScene;
     public float spawnForce;
+    [Space(30)]
+    [SerializeField] Animator _screenAnimator;
+    [SerializeField] RawImage _screenImage;
     
     /// <summary>
     /// Whether we are actively spawning or not
@@ -31,6 +35,9 @@ public class FoodSpawner : MonoBehaviour
     public bool isOpen;
     
     bool _isFiring = false;
+
+    Coroutine profilePictureCoroutine = null;
+
     Queue<FoodSpawnDefinition> _foodSpawnQueue = new Queue<FoodSpawnDefinition>();
     Animator _animator;
 
@@ -50,7 +57,34 @@ public class FoodSpawner : MonoBehaviour
             _foodSpawnQueue.Enqueue(spawn);
         }
     }
+
+    public void QueueSpawn(int count, string profileURL) {
+        if (profilePictureCoroutine != null) {
+            StopCoroutine(profilePictureCoroutine);
+        }
+
+        profilePictureCoroutine = StartCoroutine(UpdateProfilePicture(profileURL));
+        QueueSpawn(count);
+    }
     
+    /// <summary>
+    /// pull profile picture from URL and display on the spawner model for a moment
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator UpdateProfilePicture(string profileURL) {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(profileURL);
+        yield return www.SendWebRequest();
+
+        if(www.isNetworkError || www.isHttpError) {
+            Debug.LogError(www.error);
+        }
+        else {
+            Texture profile = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            _screenAnimator.Play("ShowProfile");
+            _screenImage.texture = profile;
+        }
+    }
+
     IEnumerator StartFiring() {
         _isFiring = true;
         _animator.SetBool("Winding", true);

@@ -6,11 +6,13 @@ public class PetObserver : MonoBehaviour
 {
     FoodSpawner _spawner;
 
+    public Transform windowLocation;
     public StockpileArea stockpileArea;
 
-    void Start() {
+    void Awake() {
         _spawner = GameObject.Find("FoodSpawner").GetComponent<FoodSpawner>();
         stockpileArea = GameObject.Find("StockpileArea").GetComponent<StockpileArea>();
+        windowLocation = GameObject.Find("WindowLocation").transform;
     }
 
     /// <summary>
