@@ -6,12 +6,12 @@ using UnityEngine;
 public class PetMovement : MonoBehaviour
 {
     JellyMesh _jellyMesh;
+    PetStats _stats;
 
     /// <summary>
     /// Movement direction in world space
     /// </summary>
     public Vector3 movementDirection;
-    public float movementForce;
     public float centerMovementForce;
     public float wanderFactor;
 
@@ -19,6 +19,7 @@ public class PetMovement : MonoBehaviour
     void Start()
     {
         _jellyMesh = GetComponent<JellyMesh>();
+        _stats = GetComponent<PetStats>();
     }
 
     /// <summary>
@@ -60,6 +61,8 @@ public class PetMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        float movementForce = _stats.GetMovementForce();
+
         foreach (JellyMesh.ReferencePoint referencePoint in GetTopFourReferencePoints()) {
             referencePoint.GameObject.GetComponent<Rigidbody>().AddForceAtPosition(movementDirection * movementForce, _jellyMesh.CentralPoint.transform.position, ForceMode.Impulse);
         }
@@ -77,7 +80,10 @@ public class PetMovement : MonoBehaviour
     /// <returns></returns>
     public Vector3 Wander() {
         float factor = Time.time * wanderFactor;
-        return new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
+        var wander = new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
+
+        Debug.Log(wander);
+        return wander;
     }
 
     /// <summary>

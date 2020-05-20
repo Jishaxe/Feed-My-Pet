@@ -74,7 +74,6 @@ public class PetBrain : MonoBehaviour
         }
 
         if (newMovementDirection.magnitude > 1) newMovementDirection.Normalize();
-        newMovementDirection *= _stats.excitement;
         newMovementDirection.y = 0;
         _petMovement.movementDirection = newMovementDirection;  
 

@@ -28,6 +28,7 @@ public class PetStats : MonoBehaviour
     /// This curve depicts how fast the excitement level changes back to the tend to amount.
     /// </summary>
     [SerializeField] public AnimationCurve _excitementChangeCurve;
+    [SerializeField] Vector2 _movementSpeedMinMax;
 
     [Space(30)]
     [SerializeField] [Range(0,1)] public float fun;
@@ -158,5 +159,13 @@ public class PetStats : MonoBehaviour
     /// <returns></returns>
     public float GetReactionTime() {
         return Mathf.Lerp(_sleepingReactionTime, _alertReactionTime, awakeness);
+    }
+
+    /// <summary>
+    /// Gets the movement speed according to the excitement level
+    /// </summary>
+    /// <returns>Movement speed</returns>
+    public float GetMovementForce() {
+        return Mathf.Lerp(_movementSpeedMinMax.x, _movementSpeedMinMax.y, excitement);
     }
 }
