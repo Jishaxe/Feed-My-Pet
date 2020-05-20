@@ -11,7 +11,9 @@ public class WanderAimlesslyAction: BasePetAction
     /// </summary>
     /// <param name="pet">Pet GO</param>
     /// <returns></returns>
-    public override int GetScore() { return Random.Range(5, 20); }
+    public override int GetScore() { 
+        return Random.Range(5, 20); 
+    }
 
     /// <summary>
     /// Starts the main routine for this action, make sure to set isRunning to false when you're done

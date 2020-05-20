@@ -7,13 +7,21 @@ public class PetMovement : MonoBehaviour
 {
     JellyMesh _jellyMesh;
     PetStats _stats;
+    
 
     /// <summary>
     /// Movement direction in world space
     /// </summary>
     public Vector3 movementDirection;
     public float centerMovementForce;
-    public float wanderFactor;
+
+    [Space(30)]
+    public float _wanderHeading; // 0 is facing right
+    bool _wanderDirection = true; // true is +, false is -
+    public bool _wanderMoving = true; // whether we are moving right now
+    [SerializeField] float _wanderMovingSwitchChance;
+    [SerializeField] float _wanderChangeDirectionChance;
+    [SerializeField] float _wanderChangeRate; // how fast the wander heading changes in the direction
 
     // Start is called before the first frame update
     void Start()
@@ -79,11 +87,27 @@ public class PetMovement : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     public Vector3 Wander() {
-        float factor = Time.time * wanderFactor;
-        var wander = new Vector3((Mathf.PerlinNoise(factor, 0) * 2) - 1, 0, (Mathf.PerlinNoise(0, factor) * 2) - 1);
+        if (Random.value < _wanderChangeDirectionChance) _wanderDirection = !_wanderDirection;
+        if (Random.value < _wanderMovingSwitchChance) _wanderMoving = !_wanderMoving;
 
-        Debug.Log(wander);
-        return wander;
+        if (_wanderMoving) {
+            float wanderChange = Random.Range(0f, _wanderChangeRate);
+            
+            if (_wanderDirection) {
+                _wanderHeading += wanderChange;
+            } else {
+                _wanderHeading -= wanderChange;
+            }
+
+
+            _wanderHeading = Util.Clamp0360(_wanderHeading);
+
+            Quaternion rotation = Quaternion.Euler(0, _wanderHeading, 0);
+            return rotation * Vector3.right;
+        } else {
+            return Vector3.zero;
+        }
+
     }
 
     /// <summary>
