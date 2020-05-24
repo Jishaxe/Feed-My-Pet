@@ -7,14 +7,15 @@ var start = () => {
 }
 
 var end = (reason) => {
-  console.error("Disconnected from YouTube Livestream! Reason: " + reason)
+  console.log("Disconnected from YouTube Livestream! Reason: " + reason)
 }
 
 var error = (err) => {
-  console.error(err)
   if (err.code == "ECONNRESET" || err.code == "ETIMEDOUT" || err.code == "ENOTFOUND" || err.code == "ENETUNREACH") {
     console.log("Disconnected, reconnecting...")
     connect()
+  } else {
+    console.error(err)
   }
 }
 
@@ -54,6 +55,7 @@ var message = (message) => {
 }
 
 var connect = () => {
+  if (yt) yt.stop()
   yt = new youtubeLive({channelId: config.channelId})
 
   yt.on('comment', message)
