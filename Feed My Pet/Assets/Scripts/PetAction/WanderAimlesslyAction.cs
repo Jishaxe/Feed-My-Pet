@@ -12,7 +12,7 @@ public class WanderAimlesslyAction: BasePetAction
     /// <param name="pet">Pet GO</param>
     /// <returns></returns>
     public override int GetScore() { 
-        return Random.Range(5, 20); 
+        return Random.Range(5, 50); 
     }
 
     /// <summary>

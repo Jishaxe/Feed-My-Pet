@@ -1,0 +1,17 @@
+{
+  "name": "fmp-twitch-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tslib": "^2.0.0",
+    "twitch-api-v5": "^2.0.4",
+    "twitch-bot": "^1.3.5",
+    "youtube-chat": "^1.1.0"
+  }
+}

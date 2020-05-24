@@ -15,7 +15,7 @@ public class TwitchInput : MonoBehaviour
     // Start is called before the first frame update
 
     void StartBot() {
-        string indexJs = Application.streamingAssetsPath + "/TwitchBot/index.js";
+        string indexJs = Application.streamingAssetsPath + "/YoutubeBot/index.js";
 
         Debug("Starting Twitch bot at " + indexJs);
 
